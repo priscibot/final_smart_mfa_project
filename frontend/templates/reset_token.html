@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }} - Smart MFA System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="portal-shell auth-shell auth-portal-body">
+    <header class="portal-header auth-portal-header">
+        <div class="portal-brand">
+            <div class="brand-mark">
+                <span class="mark-block mark-orange"></span>
+                <span class="mark-block mark-teal"></span>
+            </div>
+            <span>UNIVERSITY</span>
+        </div>
+        <nav class="portal-nav">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('role_signin', role=role) }}" class="portal-login-btn">Login</a>
+        </nav>
+    </header>
+
+    <main class="template-frame auth-layout auth-portal-layout">
+        <section class="auth-hero-block">
+            <p class="template-eyebrow">{{ role.upper() }} RESET</p>
+            <h1 class="auth-hero-title">Verify your reset token</h1>
+            <p class="auth-hero-text">Enter the token sent to your registered email address, then continue to create a new password and keystroke profile.</p>
+        </section>
+
+        <section class="template-panel auth-panel">
+            <div class="panel-dots">...</div>
+            <div class="auth-copy">
+                <h2>Token verification</h2>
+                <p>The token remains active for {{ 15 }} minutes.</p>
+            </div>
+
+            <form class="template-card auth-card" id="resetTokenForm" data-role="{{ role }}">
+                <div class="form-group">
+                    <label for="token">Reset token</label>
+                    <input type="text" id="token" name="token" placeholder="Enter the 6-digit token">
+                </div>
+                <button class="template-button" type="submit" style="background: {{ accent }};">Continue</button>
+                <div id="resetTokenMessage" class="message"></div>
+                <div class="auth-links">
+                    <a href="{{ url_for('role_signin', role=role) }}">Back to login</a>
+                    <a href="{{ url_for('index') }}">Home</a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/reset-flow.js') }}"></script>
+</body>
+</html>

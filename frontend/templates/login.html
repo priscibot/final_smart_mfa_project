@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Portal Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="portal-landing-body">
+    <header class="portal-header">
+        <div class="portal-brand">
+            <div class="brand-mark">
+                <span class="mark-block mark-orange"></span>
+                <span class="mark-block mark-teal"></span>
+            </div>
+            <span>UNIVERSITY</span>
+        </div>
+
+        <nav class="portal-nav">
+            <a href="{{ url_for('index') }}#about">About</a>
+            <a href="{{ url_for('index') }}#admissions">Admissions</a>
+            <a href="{{ url_for('index') }}#academics">Academics</a>
+            <a href="{{ url_for('index') }}#contact">Contact</a>
+            <a href="/student/signin" class="portal-login-btn">Login</a>
+        </nav>
+    </header>
+
+    <main class="portal-landing-main">
+        <section class="portal-hero" id="about">
+            <h1>Welcome to Your University Portal</h1>
+            <p>Select a portal to access your information.</p>
+        </section>
+
+        <section class="portal-card-grid" id="academics">
+            <article class="portal-card">
+                <div class="portal-card-preview student-preview">
+                    <div class="student-preview-left"></div>
+                    <div class="student-preview-right">
+                        <div class="preview-chart"></div>
+                        <div class="preview-chart small"></div>
+                    </div>
+                </div>
+                <h2>Students</h2>
+                <p>View your courses, grades, academic summary, and biometric sign-in access.</p>
+                <div class="portal-card-actions">
+                    <a href="/student/signin" class="portal-action-btn green">Student Portal</a>
+                    <a href="/student/signup" class="portal-text-link">Create account</a>
+                </div>
+            </article>
+
+            <article class="portal-card">
+                <div class="portal-card-preview staff-preview">
+                    <div class="preview-login-card">
+                        <h3>Staff Login</h3>
+                        <div class="preview-field"></div>
+                        <div class="preview-field"></div>
+                        <div class="preview-button green">Staff Portal</div>
+                    </div>
+                </div>
+                <h2>Staff</h2>
+                <p>Sign in for faculty and staff resources, advising tools, and secure access.</p>
+                <div class="portal-card-actions">
+                    <a href="/staff/signin" class="portal-action-btn teal">Staff Portal</a>
+                    <a href="/staff/signup" class="portal-text-link">Create account</a>
+                </div>
+            </article>
+
+            <article class="portal-card">
+                <div class="portal-card-preview admin-preview">
+                    <div class="preview-admin-panel">
+                        <div class="preview-admin-top">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <div class="preview-admin-row"></div>
+                        <div class="preview-admin-row short"></div>
+                        <div class="preview-admin-row"></div>
+                    </div>
+                </div>
+                <h2>Admins</h2>
+                <p>Monitor security logs, manage users, and oversee Smart MFA operations.</p>
+                <div class="portal-card-actions">
+                    <a href="/admin/signin" class="portal-action-btn blue">Admin Portal</a>
+                    <a href="/admin/signup" class="portal-text-link">Create account</a>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <footer class="portal-footer" id="contact">
+        <p>&copy; 2026 UNIVERSITY | Privacy Policy | www.university.edu</p>
+        <div class="portal-socials">
+            <span>f</span>
+            <span>t</span>
+            <span>in</span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ content.label }} Homepage - Smart MFA System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="portal-shell">
+    <main class="template-frame home-layout">
+        <section class="template-panel home-panel">
+            <div class="panel-top-row">
+                <p class="template-eyebrow">{{ content.label.upper() }} PROFILE</p>
+                <div class="panel-actions">
+                    <a class="template-nav-button" href="{{ url_for('index') }}">Home</a>
+                    <button class="template-nav-button nav-button-reset" id="logoutButton" type="button">Logout</button>
+                </div>
+            </div>
+
+            <div class="hero-profile">
+                <div class="avatar-circle" style="background: linear-gradient(180deg, color-mix(in srgb, {{ accent }} 24%, white), color-mix(in srgb, {{ accent }} 8%, white)); color: {{ accent }};">
+                    {{ content.profile.avatar }}
+                </div>
+                <div class="hero-copy">
+                    <h1>{{ content.profile.name }}</h1>
+                    <p class="hero-id">{{ content.profile.identifier_label }}: {{ content.profile.identifier }}</p>
+                    <p class="hero-summary">{{ content.profile.summary }}</p>
+                    <p class="hero-note">{{ content.profile.note }}</p>
+                    <span class="status-pill" style="background: color-mix(in srgb, {{ accent }} 14%, white); color: {{ accent }};">
+                        {{ content.profile.badge }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="divider-line"></div>
+
+            {% if role == 'admin' and admin_dashboard %}
+            <section class="metric-grid admin-metric-grid">
+                <article class="metric-card">
+                    <p class="metric-label">Total Users</p>
+                    <h3>{{ admin_dashboard.stats.total_users }}</h3>
+                    <p class="metric-subtext">registered platform users</p>
+                </article>
+                <article class="metric-card">
+                    <p class="metric-label">Attempts</p>
+                    <h3>{{ admin_dashboard.stats.total_attempts }}</h3>
+                    <p class="metric-subtext">all authentication attempts</p>
+                </article>
+                <article class="metric-card">
+                    <p class="metric-label">Successful</p>
+                    <h3>{{ admin_dashboard.stats.successful }}</h3>
+                    <p class="metric-subtext">successful login activity</p>
+                </article>
+                <article class="metric-card">
+                    <p class="metric-label">Failed</p>
+                    <h3>{{ admin_dashboard.stats.failed }}</h3>
+                    <p class="metric-subtext">failed login activity</p>
+                </article>
+                <article class="metric-card">
+                    <p class="metric-label">Success Rate</p>
+                    <h3>{{ '%.1f'|format(admin_dashboard.stats.success_rate) }}%</h3>
+                    <p class="metric-subtext">overall successful logins</p>
+                </article>
+            </section>
+
+            <section class="quick-section">
+                <div class="section-heading-row">
+                    <div>
+                        <p class="template-eyebrow">QUICK VIEW</p>
+                        <p class="section-supporting-text">Recent login sessions across the platform.</p>
+                    </div>
+                </div>
+                <div class="table-card">
+                    <div class="table-scroll">
+                        <table class="portal-table">
+                            <thead>
+                                <tr>
+                                    <th>Login Sessions</th>
+                                    <th>Username</th>
+                                    <th>Timestamp</th>
+                                    <th>Authentication Type</th>
+                                    <th>Success</th>
+                                    <th>IP Address</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in admin_dashboard.login_sessions %}
+                                <tr>
+                                    <td>{{ log.user_id }}</td>
+                                    <td>{{ log.username }}</td>
+                                    <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                    <td>{{ log.auth_type|replace('_', ' ')|title }}</td>
+                                    <td>{{ 'Yes' if log.success else 'No' }}</td>
+                                    <td>{{ log.ip_address or 'N/A' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="detail-section">
+                <div class="section-heading-row">
+                    <div>
+                        <p class="template-eyebrow">USERS</p>
+                        <p class="section-supporting-text">Manage accounts, passwords, access state, and removal.</p>
+                    </div>
+                    <form class="user-search-form" method="get" action="{{ url_for('role_homepage', role='admin') }}">
+                        <span class="search-icon" aria-hidden="true">&#128269;</span>
+                        <input type="text" name="search" value="{{ admin_dashboard.search_term }}" placeholder="Search users">
+                        <button class="template-nav-button compact-nav-button" type="submit">Search</button>
+                    </form>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-scroll">
+                        <table class="portal-table users-table">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Edit Account</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user_row in admin_dashboard.users %}
+                                <tr>
+                                    <td>{{ user_row.user_id }}</td>
+                                    <td>{{ user_row.username }}</td>
+                                    <td>{{ user_row.email }}</td>
+                                    <td>{{ user_row.role.title() }}</td>
+                                    <td>{{ 'Active' if user_row.is_active else 'Blocked' }}</td>
+                                    <td>
+                                        <form class="user-edit-form" method="post" action="{{ url_for('admin_update_user', user_id=user_row.user_id, search=admin_dashboard.search_term) }}">
+                                            <input type="text" name="full_name" value="{{ user_row.full_name or user_row.username }}" placeholder="Full name">
+                                            <input type="email" name="email" value="{{ user_row.email }}" placeholder="Email">
+                                            <select name="role">
+                                                {% for role_name in ['student', 'staff', 'admin'] %}
+                                                <option value="{{ role_name }}" {% if user_row.role == role_name %}selected{% endif %}>{{ role_name.title() }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <select name="status">
+                                                <option value="active" {% if user_row.is_active %}selected{% endif %}>Active</option>
+                                                <option value="blocked" {% if not user_row.is_active %}selected{% endif %}>Blocked</option>
+                                            </select>
+                                            <input type="password" name="new_password" placeholder="New password">
+                                            <button class="table-action-button save-button" type="submit">Save</button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        {% if user_row.user_id != content.profile.identifier %}
+                                        <form method="post" action="{{ url_for('admin_delete_user', user_id=user_row.user_id, search=admin_dashboard.search_term) }}">
+                                            <button class="table-action-button delete-button" type="submit">Delete</button>
+                                        </form>
+                                        {% else %}
+                                        <span class="self-protect-note">Current admin</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7">No users found for this search.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            {% else %}
+            <section class="metric-grid">
+                {% for stat in content.stats %}
+                <article class="metric-card">
+                    <p class="metric-label">{{ stat.label }}</p>
+                    <h3>{{ stat.value }}</h3>
+                    <p class="metric-subtext">{{ stat.subtext }}</p>
+                </article>
+                {% endfor %}
+            </section>
+
+            <section class="quick-section">
+                <p class="template-eyebrow">QUICK ACTIONS</p>
+                <div class="action-grid">
+                    {% for action in content.actions %}
+                    <article class="action-card">
+                        <div class="action-icon" style="color: {{ accent }};">&#9635;</div>
+                        <h3>{{ action.title }}</h3>
+                        <p>{{ action.description }}</p>
+                    </article>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="detail-section">
+                <p class="template-eyebrow">PROFILE DETAILS</p>
+                <div class="detail-card">
+                    <div class="detail-list">
+                        <div class="detail-row">
+                            <span>{{ content.profile.identifier_label }}</span>
+                            <strong>{{ content.profile.identifier }}</strong>
+                        </div>
+                        {% for label, value in content.details %}
+                        <div class="detail-row">
+                            <span>{{ label }}</span>
+                            <strong>{{ value }}</strong>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="detail-arrow">&#8595;</div>
+                </div>
+            </section>
+            {% endif %}
+        </section>
+    </main>
+    <script>
+        const logoutButton = document.getElementById('logoutButton');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', async () => {
+                await fetch('/api/logout', { method: 'POST' });
+                window.location.href = '{{ url_for("role_signin", role=role) }}';
+            });
+        }
+    </script>
+</body>
+</html>

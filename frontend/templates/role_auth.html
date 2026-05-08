@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }} - Smart MFA System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="portal-shell auth-shell auth-portal-body">
+    <header class="portal-header auth-portal-header">
+        <div class="portal-brand">
+            <div class="brand-mark">
+                <span class="mark-block mark-orange"></span>
+                <span class="mark-block mark-teal"></span>
+            </div>
+            <span>UNIVERSITY</span>
+        </div>
+
+        <nav class="portal-nav">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('role_signin', role=role) }}" class="portal-login-btn">Login</a>
+        </nav>
+    </header>
+
+    <main class="template-frame auth-layout auth-portal-layout">
+        <section class="auth-hero-block">
+            <p class="template-eyebrow">{{ eyebrow }}</p>
+            <h1 class="auth-hero-title">{{ headline }}</h1>
+            <p class="auth-hero-text">{{ subheadline }}</p>
+        </section>
+
+        <section class="template-panel auth-panel">
+            <div class="panel-dots">...</div>
+
+            <div class="auth-copy">
+                <h2>{{ 'Secure access to your portal' if mode == 'signin' else 'Create your secure portal account' }}</h2>
+                <p>{{ content_hint if content_hint else 'Use your institutional credentials and behavioral biometric verification.' }}</p>
+            </div>
+
+            <form class="template-card auth-card" id="roleAuthForm" data-role="{{ role }}" data-mode="{{ mode }}">
+                {% if mode == 'signup' %}
+                <div class="form-group">
+                    <label for="fullname">Full name</label>
+                    <input type="text" id="fullname" name="fullname" placeholder="Enter your full name">
+                </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label for="username">{{ 'Username' if mode == 'signin' else 'Username or ID' }}</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username">
+                </div>
+
+                {% if mode == 'signup' %}
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="text" id="email" name="email" placeholder="Enter your institutional email">
+                </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-with-icon">
+                        <input type="password" id="password" name="password" placeholder="Enter your password">
+                        <span class="input-icon">o</span>
+                    </div>
+                </div>
+
+                {% if mode == 'signup' %}
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your password">
+                </div>
+                {% endif %}
+
+                {% if mode == 'signin' %}
+                <div class="info-box compact-info">
+                    <p><strong>Behavioral biometrics active:</strong> this sign-in page captures password keystroke timing and verifies it during authentication.</p>
+                </div>
+                {% endif %}
+
+                <div class="auth-meta-row">
+                    <label class="checkbox-row">
+                        <input type="checkbox">
+                        <span>{{ 'Remember me' if mode == 'signin' else 'I agree to the platform policy' }}</span>
+                    </label>
+                </div>
+
+                <button
+                    class="template-button"
+                    type="submit"
+                    style="background: {{ accent }};"
+                >
+                    {{ 'Sign In' if mode == 'signin' else 'Create Account' }}
+                </button>
+
+                {% if mode == 'signin' %}
+                <button
+                    class="template-button secondary-template-button"
+                    id="resetKeystrokeButton"
+                    type="button"
+                    style="border-color: {{ accent }}; color: {{ accent }};"
+                >
+                    Reset Keystroke
+                </button>
+                {% endif %}
+
+                <div id="authMessage" class="message"></div>
+
+                <div class="auth-links">
+                    {% for link in links %}
+                    <a href="{{ link.href }}">{{ link.label }}</a>
+                    {% endfor %}
+                </div>
+            </form>
+
+            <p class="template-footnote">
+                Need help? Contact the IT Support Team for {{ role }} account assistance.
+            </p>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/behavioral-capture.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/role-auth.js') }}"></script>
+</body>
+</html>

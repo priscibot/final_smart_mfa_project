@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Smart MFA System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>Smart MFA System</h1>
+            </div>
+            <div class="nav-user">
+                <span>Welcome, <strong>{{ user.username }}</strong></span>
+                <button id="logoutButton" class="btn-secondary" type="button">Logout</button>
+            </div>
+        </nav>
+
+        <div class="dashboard-content">
+            <div class="status-panel">
+                <h2>Authentication Status</h2>
+                <div class="status-indicator" id="authStatus">
+                    <div class="status-icon">OK</div>
+                    <div class="status-text">
+                        <p><strong>Password:</strong> Verified</p>
+                        <p><strong>Behavioral Verification:</strong> <span id="behavioralStatus">Monitoring...</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>My Courses</h3>
+                    <ul>
+                        <li>COS 401 - Project Management</li>
+                        <li>COS 402 - Computer Security</li>
+                        <li>COS 403 - Machine Learning</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Recent Authentication Activity</h3>
+                    {% if logs %}
+                        <ul>
+                            {% for log in logs %}
+                                <li>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }} - {{ log.auth_type }} - {{ 'success' if log.success else 'failed' }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No authentication events yet.</p>
+                    {% endif %}
+                </div>
+
+                <div class="card">
+                    <h3>Behavioral Notes</h3>
+                    <p>Your login keystroke rhythm is stored per user. If someone else knows your password but types differently, the system blocks access and flags the attempt for admin review.</p>
+                </div>
+
+                {% if user.role == 'admin' %}
+                <div class="card">
+                    <h3>Admin Portal</h3>
+                    <p><a href="/admin/stats">Open security statistics and breach logs</a></p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/behavioral-capture.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script>
+        document.getElementById('logoutButton').addEventListener('click', async () => {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/login';
+        });
+    </script>
+</body>
+</html>

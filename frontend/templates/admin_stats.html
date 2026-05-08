@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Security Portal - Smart MFA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>Admin Security Portal</h1>
+            </div>
+            <div class="nav-user">
+                <a href="/dashboard" class="btn-secondary">Back to Dashboard</a>
+            </div>
+        </nav>
+
+        <div class="dashboard-content">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>Total Users</h3>
+                    <p>{{ stats.total_users }}</p>
+                </div>
+                <div class="card">
+                    <h3>Total Attempts</h3>
+                    <p>{{ stats.total_attempts }}</p>
+                </div>
+                <div class="card">
+                    <h3>Success Rate</h3>
+                    <p>{{ '%.2f'|format(stats.success_rate) }}%</p>
+                </div>
+                <div class="card">
+                    <h3>Suspected Breaches</h3>
+                    <p>{{ stats.suspected_breaches }}</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Recent Suspected Breaches</h3>
+                {% if breaches %}
+                    <ul>
+                        {% for log in breaches %}
+                            <li>
+                                {{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }} -
+                                {{ log.user_id }} -
+                                {{ log.details or 'Possible breach detected' }}
+                                {% if log.confidence_score is not none %}
+                                    (confidence {{ '%.2f'|format(log.confidence_score) }})
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No suspected breaches logged.</p>
+                {% endif %}
+            </div>
+
+            <div class="card">
+                <h3>Recent Authentication Logs</h3>
+                {% if logs %}
+                    <ul>
+                        {% for log in logs %}
+                            <li>
+                                {{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }} -
+                                {{ log.user_id }} -
+                                {{ log.auth_type }} -
+                                {{ 'success' if log.success else 'failed' }}
+                                {% if log.breach_suspected %}
+                                    - flagged as possible breach
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No logs available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
