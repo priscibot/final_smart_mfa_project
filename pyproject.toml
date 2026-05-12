@@ -1,0 +1,6 @@
+[project]
+name = "smart-mfa-project"
+version = "1.0.0"
+
+[project.scripts]
+app = "backend.app:app"
