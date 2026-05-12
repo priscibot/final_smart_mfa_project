@@ -1071,7 +1071,7 @@ with app.app_context():
     db.create_all()
     ensure_database_schema()
 
-    if User.query.count() == 0:
+    if os.environ.get('VERCEL') or User.query.count() == 0:
         demo_users = [
             {
                 'user_id': 'user_000',
