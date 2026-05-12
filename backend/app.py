@@ -29,17 +29,21 @@ app = Flask(
 )
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
-if os.environ.get('VERCEL'):
-    DATA_DIR = '/tmp/smart_mfa_data'
+app.config['SECRET_KEY'] = 'smart-mfa-secret-key-2024'
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    if DATABASE_URL.startswith('postgres://'):
+        DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 else:
     DATA_DIR = os.path.join(PROJECT_ROOT, 'data')
+    os.makedirs(DATA_DIR, exist_ok=True)
+    DB_PATH = os.path.join(DATA_DIR, 'users.db').replace('\\', '/')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
 
-os.makedirs(DATA_DIR, exist_ok=True)
-DB_PATH = os.path.join(DATA_DIR, 'users.db').replace('\\', '/')
-
-
-app.config['SECRET_KEY'] = 'smart-mfa-secret-key-2024'
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -1071,7 +1075,7 @@ with app.app_context():
     db.create_all()
     ensure_database_schema()
 
-    if os.environ.get('VERCEL') or User.query.count() == 0:
+    if User.query.count() == 0:
         demo_users = [
             {
                 'user_id': 'user_000',
