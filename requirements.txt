@@ -9,3 +9,4 @@ matplotlib==3.10.8
 seaborn==0.13.2
 setuptools>=70
 wheel>=0.45
+psycopg2-binary
