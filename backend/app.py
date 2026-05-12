@@ -1103,6 +1103,16 @@ with app.app_context():
                 'department': 'ICT | Security Operations',
                 'profile_note': 'Manage authentication activity, security alerts, and behavioral biometric oversight across the platform.'
             },
+            {
+                'user_id': 'user_003',
+                'username': 'staff',
+                'full_name': 'Demo Staff',
+                'email': 'staff@university.edu',
+                'password': 'staff123',
+                'role': 'staff',
+                'department': 'Department of Computer Science | Lecturer',
+                'profile_note': 'Manage courses, advise students, and review academic activity.'
+            },
         ]
 
         for user_data in demo_users:
