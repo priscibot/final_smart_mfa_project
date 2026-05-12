@@ -28,9 +28,15 @@ app = Flask(
     static_folder='../frontend/static'
 )
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-DATA_DIR = os.path.join(PROJECT_ROOT, 'data')
+
+if os.environ.get('VERCEL'):
+    DATA_DIR = '/tmp/smart_mfa_data'
+else:
+    DATA_DIR = os.path.join(PROJECT_ROOT, 'data')
+
 os.makedirs(DATA_DIR, exist_ok=True)
 DB_PATH = os.path.join(DATA_DIR, 'users.db').replace('\\', '/')
+
 
 app.config['SECRET_KEY'] = 'smart-mfa-secret-key-2024'
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
